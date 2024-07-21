@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Полный контроль над данными</title>
+    <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript">
+        function funcBefore() {
+            // можно show гифку-картинку, которую поместим в body и сделаем style display: none
+            // после вызова funcSuccess, делаем  hide гифку
+            // пока сделаем проще
+            $("#information").text("Ожидание данных...");
+        }
+        // теперь после нажатия на кнопку пока не получили данные - будет вызываться функция Before
+        // когда получим данные - будет вызываться фунция Success
+        function funcSuccess(data) {
+            // data - контент, который мы получили со странички content.php
+            $("#information").text(data);
+        }
+        $(document).ready(function() {
+            $("#load").bind("click", function() {
+                var admin = "Admin";
+                $.ajax({
+                    // в функции более 17 параметров
+                    // url - адрес странички, на которую будем отправлять данные
+                    url: "content.php", // так как это параметры функции, то ставим запятую
+                    type: "POST", // указываем метод отправки данных
+                    // отправляем переменные
+                    data: ({name: admin, number: 5}),
+                    // можем передавать переменные типа строка, число, булевые,
+                    // а можем html
+                    // указываем тип передваемых данных
+                    dataType: "html", // тот же text, но разрешены всякие тэги
+                    beforeSend: funcBefore, // только имя функции
+                    // можем ничего не отправлять, а можем гифку Идет загрузка...
+                    success: funcSuccess
+                    // можем ничего не отправлять после загрузки данных
+
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- За урок мы изучим базовое обращение с технологией Ajax.
+    Мы создадим PHP страницу, на которую выполним асинхронный запрос
+    и в качестве результата нами будет получена строка из PHP файла.
+     
+    Создание формы
+    Создайте форму как показано на фото ниже:
+    https://itproger.com/img/courses/1577016093.png
+    При нажатии на кнопку «Отобразить» получайте данные из текстового поля
+    и передавайте их на сервер.
+
+    На сервере данные должны приниматься и возвращаться обратно.
+    После получения данных выведите их на экран. 
+
+    Реализация
+    Создайте HTML разметку:
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>Test</title>
+        </head>
+        <body>
+            <form>
+                <input type="text" placeholder="Имя"><br>
+                <button id="send">Отобразить</button>
+                <div id="information"></div>
+            </form>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+            <script>
+                function funcSuccess(data) {
+                	$("#information").text(data)
+                }
+                $("#send").bind("click", function () {
+                    var input = $("form input").val(); // Получаем данные из формы
+                    $.ajax ({
+                        url: "content.php",
+                        type: "POST",
+                        data: ({input: input}), // Передаем данные
+                        dataType: "html",
+                        success: funcSuccess // Функция что сработает после получения данных
+                    });
+                });
+            </script>
+        </body>
+    </html>
+
+    На странице сервера пропишите следующее:
+    <?php
+        echo $_POST['input'];
+    ?> 
+    
+    Данные отразятся на странице -->
+
+    <p id="load" style="cursor:pointer">Загрузить данные</p>
+    <!-- по нажатии на эту кнопку будет выводиться информация и отправляться сообщение -->
+    <div id="information"></div>
+
+    <!-- в файле php загрузим 
+     <?php
+        sleep(2);
+        echo "Данные: строка - ".$_POST['name'].", цифра - ".$_POST['number'];
+    // две переменные, больше ничего не передавали
+    // просто вывели данные из другого документа
+    // можем здесь ссылаться к базе данных с помощью php
+    // для загрузки контента, комментариев
+    ?> -->
+    
+</body>
+</html>
